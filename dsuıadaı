@@ -1,5 +1,3 @@
-if getgenv().ScriptAlreadyExecuted then return end
-getgenv().ScriptAlreadyExecuted = true
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
@@ -2674,6 +2672,146 @@ Tabs.CR7:AddButton({
     end
 })
 
+
+
+-- Auto Titan
+
+Tabs.CR7:AddButton({
+    Title = "DarkSteel Farm",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+        local locations = {
+            Vector3.new(1682, 27, 2292),
+            Vector3.new(1654, 35, 2313),
+            Vector3.new(1681, 27, 2329),
+            Vector3.new(1623, 27, 2328),
+            Vector3.new(1620, 27, 2294)
+        }
+
+        local currentLocationIndex = 1
+        local stayAtLocation = false
+
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+        local AutoTitanButton = Instance.new("TextButton")
+        AutoTitanButton.Size = UDim2.new(0, 200, 0, 50)
+        AutoTitanButton.Position = UDim2.new(0.5, 50, 0.75, 0)
+        AutoTitanButton.Text = "Auto Titan"
+        AutoTitanButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        AutoTitanButton.TextColor3 = Color3.new(1, 1, 1)
+        AutoTitanButton.Font = Enum.Font.SourceSansBold
+        AutoTitanButton.TextSize = 20
+        AutoTitanButton.Parent = ScreenGui
+
+        local StopButton = Instance.new("TextButton")
+        StopButton.Size = UDim2.new(0, 200, 0, 50)
+        StopButton.Position = UDim2.new(0.5, 50, 0.81, 0)
+        StopButton.Text = "Stop"
+        StopButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        StopButton.TextColor3 = Color3.new(1, 1, 1)
+        StopButton.Font = Enum.Font.SourceSansBold
+        StopButton.TextSize = 20
+        StopButton.Parent = ScreenGui
+
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if stayAtLocation and HumanoidRootPart then
+                HumanoidRootPart.CFrame = CFrame.new(locations[currentLocationIndex])
+            end
+        end)
+
+        AutoTitanButton.MouseButton1Click:Connect(function()
+            currentLocationIndex = currentLocationIndex + 1
+            if currentLocationIndex > #locations then
+                currentLocationIndex = 1
+            end
+
+            if HumanoidRootPart then
+                HumanoidRootPart.CFrame = CFrame.new(locations[currentLocationIndex])
+                stayAtLocation = true
+            end
+        end)
+
+        StopButton.MouseButton1Click:Connect(function()
+            stayAtLocation = false
+            currentLocationIndex = 1
+        end)
+    end
+})
+
+
+-- Auto Samurai
+
+Tabs.CR7:AddButton({
+    Title = "Adamantite Farm",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+        local locations = {
+            Vector3.new(-1670.36572265625, 520.3575439453125, 7286.283203125),
+            Vector3.new(-1734.2337646484375, 529.2215576171875, 7296.73388671875),
+            Vector3.new(-1705.7255859375, 520.3575439453125, 7342.8310546875),
+            Vector3.new(-1792.862548828125, 519.5882568359375, 7286.28271484375),
+            Vector3.new(-1757.49462890625, 519.5882568359375, 7237.10498046875)
+        }
+
+        local currentLocationIndex = 1
+        local stayAtLocation = false
+
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+        local AutoSamuraiButton = Instance.new("TextButton")
+        AutoSamuraiButton.Size = UDim2.new(0, 200, 0, 50)
+        AutoSamuraiButton.Position = UDim2.new(0.5, -250, 0.75, 0)
+        AutoSamuraiButton.Text = "Auto Samurai"
+        AutoSamuraiButton.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+        AutoSamuraiButton.TextColor3 = Color3.new(1, 1, 1)
+        AutoSamuraiButton.Font = Enum.Font.SourceSansBold
+        AutoSamuraiButton.TextSize = 20
+        AutoSamuraiButton.Parent = ScreenGui
+
+        local StopButton = Instance.new("TextButton")
+        StopButton.Size = UDim2.new(0, 200, 0, 50)
+        StopButton.Position = UDim2.new(0.5, -250, 0.81, 0)
+        StopButton.Text = "Stop"
+        StopButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        StopButton.TextColor3 = Color3.new(1, 1, 1)
+        StopButton.Font = Enum.Font.SourceSansBold
+        StopButton.TextSize = 20
+        StopButton.Parent = ScreenGui
+
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if stayAtLocation and HumanoidRootPart then
+                HumanoidRootPart.CFrame = CFrame.new(locations[currentLocationIndex])
+            end
+        end)
+
+        AutoSamuraiButton.MouseButton1Click:Connect(function()
+            currentLocationIndex = currentLocationIndex + 1
+            if currentLocationIndex > #locations then
+                currentLocationIndex = 1
+            end
+
+            if HumanoidRootPart then
+                HumanoidRootPart.CFrame = CFrame.new(locations[currentLocationIndex])
+                stayAtLocation = true
+            end
+        end)
+
+        StopButton.MouseButton1Click:Connect(function()
+            stayAtLocation = false
+            currentLocationIndex = 1
+        end)
+    end
+})
 
     -- Settings
     SaveManager:SetLibrary(Fluent)
