@@ -2677,7 +2677,7 @@ Tabs.CR7:AddButton({
 -- Auto Titan
 
 Tabs.CR7:AddButton({
-    Title = "DarkSteel Farm",
+    Title = "Dark Steel Farm",
     Callback = function()
         local Players = game:GetService("Players")
         local LocalPlayer = Players.LocalPlayer
