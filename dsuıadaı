@@ -266,7 +266,6 @@ end)
 
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-
 local humanoid = character:WaitForChild("Humanoid")
 local runService = game:GetService("RunService")
 local userInputService = game:GetService("UserInputService")
@@ -275,14 +274,31 @@ local flying = false
 local speed = 40
 local bodyGyro = nil
 local bodyVelocity = nil
-local joystickActive = false
-local isMobile = false
+local isMobile = userInputService.TouchEnabled
+local moveDirection = Vector3.zero
 
-if userInputService.TouchEnabled then
-    isMobile = true
+local function updateMovement()
+    if not flying then return end
+
+    moveDirection = humanoid.MoveDirection
+    local camera = workspace.CurrentCamera
+
+    if moveDirection.Magnitude > 0 then
+        local forward = camera.CFrame.LookVector.Unit
+        bodyVelocity.Velocity = Vector3.new(
+            forward.X * moveDirection.Magnitude * speed,
+            forward.Y * moveDirection.Magnitude * speed,
+            forward.Z * moveDirection.Magnitude * speed
+        )
+    else
+        bodyVelocity.Velocity = Vector3.zero
+    end
+
+    local lookDirection = Vector3.new(camera.CFrame.LookVector.X, 0, camera.CFrame.LookVector.Z)
+    bodyGyro.CFrame = CFrame.new(character.HumanoidRootPart.Position, character.HumanoidRootPart.Position + lookDirection)
 end
 
-local function startFlyingPC()
+local function startFlying()
     if flying then return end
     flying = true
     humanoid.PlatformStand = true
@@ -291,73 +307,15 @@ local function startFlyingPC()
     bodyVelocity = Instance.new("BodyVelocity")
 
     bodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
-    bodyGyro.CFrame = character.HumanoidRootPart.CFrame
     bodyGyro.P = 5000
-
-    bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
-    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-    bodyVelocity.Parent = character.HumanoidRootPart
+    bodyGyro.CFrame = character.HumanoidRootPart.CFrame
     bodyGyro.Parent = character.HumanoidRootPart
 
-    runService.RenderStepped:Connect(function()
-        if flying then
-            local moveDirection = humanoid.MoveDirection
-            local camera = workspace.CurrentCamera
-
-            local verticalSpeed = 0
-            if moveDirection.Magnitude > 0 then
-                verticalSpeed = camera.CFrame.LookVector.Y * speed
-            end
-
-            bodyVelocity.Velocity = Vector3.new(
-                moveDirection.X * speed,
-                verticalSpeed,
-                moveDirection.Z * speed
-            )
-            bodyGyro.CFrame = CFrame.new(character.HumanoidRootPart.Position, character.HumanoidRootPart.Position + Vector3.new(camera.CFrame.LookVector.X, 0, camera.CFrame.LookVector.Z))
-        end
-    end)
-end
-
-local function startFlyingMobile()
-    if flying then return end
-    flying = true
-    humanoid.PlatformStand = true
-
-    bodyGyro = Instance.new("BodyGyro")
-    bodyVelocity = Instance.new("BodyVelocity")
-
-    bodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
-    bodyGyro.CFrame = character.HumanoidRootPart.CFrame
-    bodyGyro.P = 5000
-
     bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
-    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.Velocity = Vector3.zero
     bodyVelocity.Parent = character.HumanoidRootPart
-    bodyGyro.Parent = character.HumanoidRootPart
 
-    runService.RenderStepped:Connect(function()
-        if flying then
-            if joystickActive then
-                local moveDirection = humanoid.MoveDirection
-                local camera = workspace.CurrentCamera
-
-                local verticalSpeed = 0
-                if moveDirection.Magnitude > 0 then
-                    verticalSpeed = camera.CFrame.LookVector.Y * speed
-                end
-
-                bodyVelocity.Velocity = Vector3.new(
-                    moveDirection.X * speed,
-                    verticalSpeed,
-                    moveDirection.Z * speed
-                )
-            else
-                bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-            end
-            bodyGyro.CFrame = CFrame.new(character.HumanoidRootPart.Position, character.HumanoidRootPart.Position + Vector3.new(camera.CFrame.LookVector.X, 0, camera.CFrame.LookVector.Z))
-        end
-    end)
+    runService.RenderStepped:Connect(updateMovement)
 end
 
 local function stopFlying()
@@ -376,21 +334,14 @@ local Toggle = Tabs.Player:AddToggle("✈ Fly", {Title = "✈ Fly", Default = fa
 
 Toggle:OnChanged(function()
     if Toggle.Value then
-        if isMobile then
-            startFlyingMobile()
-        else
-            startFlyingPC()
-        end
+        startFlying()
     else
         stopFlying()
     end
 end)
 
 player.CharacterAdded:Connect(function(newCharacter)
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        stopFlying()
-    end
-
+    stopFlying()
     character = newCharacter
     humanoid = character:WaitForChild("Humanoid")
 end)
