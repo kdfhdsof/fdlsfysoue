@@ -264,6 +264,7 @@ end)
 
 
 
+
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
@@ -280,15 +281,36 @@ local moveDirection = Vector3.zero
 local function updateMovement()
     if not flying then return end
 
-    moveDirection = humanoid.MoveDirection
     local camera = workspace.CurrentCamera
+    local forward = camera.CFrame.LookVector
+    local right = camera.CFrame.RightVector
+    local up = Vector3.new(0, 1, 0)
+    
+    moveDirection = Vector3.zero
+    
+    if not isMobile then
+        if userInputService:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + forward
+        end
+        if userInputService:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - forward
+        end
+        if userInputService:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - right
+        end
+        if userInputService:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + right
+        end
+    else
+        moveDirection = humanoid.MoveDirection
+    end
 
     if moveDirection.Magnitude > 0 then
-        local forward = camera.CFrame.LookVector.Unit
+        moveDirection = moveDirection.Unit
         bodyVelocity.Velocity = Vector3.new(
-            forward.X * moveDirection.Magnitude * speed,
-            forward.Y * moveDirection.Magnitude * speed,
-            forward.Z * moveDirection.Magnitude * speed
+            moveDirection.X * speed,
+            moveDirection.Y * speed,
+            moveDirection.Z * speed
         )
     else
         bodyVelocity.Velocity = Vector3.zero
@@ -345,6 +367,7 @@ player.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
     humanoid = character:WaitForChild("Humanoid")
 end)
+
 
 
 
