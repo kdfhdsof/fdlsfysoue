@@ -1405,6 +1405,9 @@ end
 
 -- Teleport Tab
 
+Tabs.Teleport:AddParagraph({
+        Title = "⚠️  Warning: Reset Before Using Tp Systems!"
+    })
 
 local players = game:GetService("Players")
 
@@ -1637,11 +1640,11 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
 local teleportPositions = {
-    ["🏞  Mainland"] = Vector3.new(-141.12545776367188, 16.017024993896484, 506.3288269042969),
-    ["🏜  Desert"] = Vector3.new(1219.482421875, 16.01701545715332, -204.02732849121094),
-    ["🌋  Volcano"] = Vector3.new(1742.3758544921875, 16.00238800048828, 1924.69189453125),
-    ["🌲  Forest"] = Vector3.new(-1901.6549072265625, 14.854000091552734, 380.0467529296875),
-    ["❄  Artic"] = Vector3.new(-1040.934814453125, 16.017024993896484, -1899.8370361328125),
+    ["🏞  Mainland"] = Vector3.new(-305, 25, 405),
+    ["🏜  Desert"] = Vector3.new(1265, 25, -209),
+    ["🌋  Volcano"] = Vector3.new(1734, 25, 2013),
+    ["🌲  Forest"] = Vector3.new(-2074, 25, 420),
+    ["❄  Artic"] = Vector3.new(-1190, 25, -1718),
     ["🏮  Asia"] = Vector3.new(-1055.904, 30.579, 5759.370)
 }
 
@@ -1706,7 +1709,7 @@ Tabs.Teleport:AddButton({
                             spawnSet = true
                             game:GetService("StarterGui"):SetCore("SendNotification", {
                                 Title = "Spawn Point Saved",
-                                Text = "Your spawn point has been saved!",
+                                Text = "",
                                 Duration = 3
                             })
                         end
@@ -1719,7 +1722,7 @@ Tabs.Teleport:AddButton({
                         spawnSet = false
                         game:GetService("StarterGui"):SetCore("SendNotification", {
                             Title = "Spawn Point Removed",
-                            Text = "Your spawn point has been removed!",
+                            Text = "",
                             Duration = 3
                         })
                     end
@@ -1731,10 +1734,11 @@ Tabs.Teleport:AddButton({
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
     if spawnSet and spawnPoint then
+        wait (1.5)
         character:WaitForChild("HumanoidRootPart").CFrame = spawnPoint + Vector3.new(0, 3, 0)
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Teleported",
-            Text = "You have been teleported to your spawn point!",
+            Text = "",
             Duration = 3
         })
     end
@@ -1899,9 +1903,12 @@ end)
 ToggleTitan:SetValue(false)
 
 
-
+local player = game.Players.LocalPlayer
 local replicatedStorage = game:GetService("ReplicatedStorage")
+local tweenService = game:GetService("TweenService")
 local remoteInterface = replicatedStorage:WaitForChild("remoteInterface")
+local workspace = game:GetService("Workspace")
+
 local chop = workspace.worldResources.choppable
 local mineable = workspace.worldResources.mineable
 local aiFolder = workspace:WaitForChild("AI_Server")
@@ -1911,6 +1918,71 @@ local stamina = nil
 local humanoid = nil
 local flying = false
 local isAutoChopEnabled, isAutoMineEnabled, isAutoAIEnabled = false, false, false
+
+local BreakerPart
+local BreakerUI
+local BreakerRef
+
+local function clean()
+    if not BreakerUI then return end
+    if BreakerPart then 
+        BreakerPart:Destroy() 
+    end
+    BreakerUI = nil
+    BreakerPart = nil
+    BreakerRef = nil
+end
+
+local function customHealthbar(block, health, maxHealth)
+    clean()
+    local percent = math.clamp(health / maxHealth, 0, 1)
+    local part = Instance.new('Part')
+    part.Size = Vector3.one
+    part.CFrame = block.PrimaryPart.CFrame
+    part.Transparency = 1
+    part.Anchored = true
+    part.CanCollide = false
+    part.Parent = workspace
+    BreakerPart = part
+
+    local billboard = Instance.new('BillboardGui')
+    billboard.Size = UDim2.fromOffset(249, 120)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.Adornee = part
+    billboard.MaxDistance = 100
+    billboard.AlwaysOnTop = true
+    billboard.Parent = part
+    BreakerUI = billboard
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.fromOffset(200, 20)
+    nameLabel.Position = UDim2.fromOffset(24, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextScaled = true
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.Font = Enum.Font.SourceSansBold
+    nameLabel.Text = block.Name
+    nameLabel.Parent = billboard
+
+    local holder = Instance.new('Frame')
+    holder.Size = UDim2.fromOffset(160, 50)
+    holder.Position = UDim2.fromOffset(44, 32)
+    holder.BackgroundColor3 = Color3.new()
+    holder.BackgroundTransparency = 0.5
+    holder.Parent = billboard
+
+    local barholder = Instance.new('Frame')
+    barholder.Size = UDim2.fromOffset(138, 4)
+    barholder.Position = UDim2.fromOffset(12, 32)
+    barholder.BackgroundColor3 = Color3.new(1, 0, 0)
+    barholder.Parent = holder
+
+    local healthbar = Instance.new('Frame')
+    healthbar.Size = UDim2.fromScale(percent, 1)
+    healthbar.BackgroundColor3 = Color3.new(0, 1, 0)
+    healthbar.Parent = barholder
+    BreakerRef = healthbar
+end
 
 local function chopObject(object)
     if object and object.PrimaryPart then
@@ -1941,7 +2013,14 @@ local function autoChop()
         end
     end
     if nearestObject then
+        local health = nearestObject:GetAttribute("health")
+        local maxHealth = nearestObject:GetAttribute("maxHealth")
+        if health and maxHealth then
+            customHealthbar(nearestObject, health, maxHealth)
+        end
         chopObject(nearestObject)
+    else
+        clean()
     end
 end
 
@@ -1974,7 +2053,14 @@ local function autoMine()
         end
     end
     if nearestObject then
+        local health = nearestObject:GetAttribute("health")
+        local maxHealth = nearestObject:GetAttribute("maxHealth")
+        if health and maxHealth then
+            customHealthbar(nearestObject, health, maxHealth)
+        end
         mineObject(nearestObject)
+    else
+        clean()
     end
 end
 
@@ -2084,8 +2170,6 @@ AutoMineToggle:OnChanged(function(value)
 end)
 
 updateCharacter()
-
-
 
 
 -- Esp Tab
@@ -2484,7 +2568,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local Toggle = Tabs.Esp:AddToggle("HealthBarToggle", {Title = "❤️  Health Esp", Default = false })
+local Toggle = Tabs.Esp:AddToggle("HealthBarToggle", {Title = "❤  Health Esp", Default = false })
 
 local function createHealthBar(player)
     if player == LocalPlayer then return end
@@ -2579,7 +2663,6 @@ end
 Toggle:OnChanged(function(value)
     toggleHealthBars(value)
 end)
-
 
 -- CR7 Tab
 
