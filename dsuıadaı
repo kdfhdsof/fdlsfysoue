@@ -1031,7 +1031,7 @@ local function initializeCharacter()
 end
 
 local Toggle = Tabs.Combat:AddToggle("CombatToggle", {
-    Title = "🆙  UpDown Tp",
+    Title = "↕️  UpDown Tp",
     Default = false
 })
 
