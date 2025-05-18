@@ -571,6 +571,49 @@ end)
 
 
 
+local Toggle = Tabs.Player:AddToggle("XRayToggle", {Title = "🔍  X-Ray", Default = false})
+
+local originalTransparency = {}
+
+local function isBoxLike(part)
+    local size = part.Size
+    local sizes = {size.X, size.Y, size.Z}
+    table.sort(sizes)
+    if math.abs(sizes[1] - sizes[2]) < 0.2 and math.abs(sizes[2] - sizes[3]) < 0.2 then
+        return true
+    end
+    if sizes[1] < 0.6 and sizes[2] < 0.6 and sizes[3] < 0.6 then
+        return true
+    end
+    return false
+end
+
+Toggle:OnChanged(function(value)
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and not obj:IsDescendantOf(game.Players.LocalPlayer.Character) then
+            local name = obj.Name:lower()
+            if not (name:find("crate") or name:find("box") or name:find("cube") or name:find("chest") or name:find("barrel") or isBoxLike(obj)) then
+                if value then
+                    if originalTransparency[obj] == nil then
+                        originalTransparency[obj] = obj.Transparency
+                    end
+                    obj.Transparency = 0.7
+                else
+                    if originalTransparency[obj] ~= nil then
+                        obj.Transparency = originalTransparency[obj]
+                    end
+                end
+            end
+        end
+    end
+    if not value then
+        originalTransparency = {}
+    end
+end)
+
+
+
+
 local function enableWorldHazards(character)
     local hazardScript = character:FindFirstChild("worldHazards")
     if hazardScript then
@@ -580,7 +623,6 @@ end
 
 Tabs.Player:AddButton({
     Title = "♨️  Anti Lava",
-    Description = "",
     Callback = function()
         local player = game.Players.LocalPlayer
         
@@ -595,6 +637,23 @@ Tabs.Player:AddButton({
     end
 })
 
+
+Tabs.Player:AddButton({
+    Title = "🌊  Delete Water",
+    Callback = function()
+        local player = game:GetService("Players").LocalPlayer
+        local targets = {
+            player:FindFirstChild("PlayerScripts") and player.PlayerScripts:FindFirstChild("Swim"),
+            game:GetService("Lighting"):FindFirstChild("water"),
+            game:GetService("Lighting"):FindFirstChild("waterBlur")
+        }
+        for _, obj in ipairs(targets) do
+            if obj then
+                obj:Destroy()
+            end
+        end
+    end
+})
 
 
 local function startBubbleEffect()
@@ -638,12 +697,11 @@ local function startBubbleEffect()
 end
 
 Tabs.Player:AddButton({
-    Title = "💧  Auto Air Bubbles",
+    Title = "💦  Auto Air Bubbles",
     Callback = function()
         startBubbleEffect()
     end
 })
-
 
 -- Combat Tab
 
