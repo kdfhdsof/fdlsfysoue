@@ -200,7 +200,7 @@ ToggleSpeed:OnChanged(function()
 end)
 
 local SpeedInput = Tabs.Player:AddInput("SpeedInput", {
-    Title = "⏩  Set Speed",
+    Title = "🔢  Set Speed",
     Default = "16",
     Placeholder = "Enter speed",
     Numeric = true,
@@ -361,7 +361,7 @@ Toggle:OnChanged(function()
 end)
 
 local Slider = Tabs.Player:AddSlider("FlyS", {
-    Title = "🎚️  Fly Speed",
+    Title = "⏩  Fly Speed",
     Default = 20,
     Min = 16,
     Max = 40,
