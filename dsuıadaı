@@ -351,7 +351,7 @@ local Options = {
     MyToggle = {Value = false}
 }
 
-local Toggle = Tabs.Player:AddToggle("✈ Fly", {Title = "✈ Fly", Default = false})
+local Toggle = Tabs.Player:AddToggle("✈  Fly", {Title = "✈ Fly", Default = false})
 Toggle:OnChanged(function()
     if Toggle.Value then
         startFlying()
@@ -361,7 +361,7 @@ Toggle:OnChanged(function()
 end)
 
 local Slider = Tabs.Player:AddSlider("FlyS", {
-    Title = "Fly Speed",
+    Title = "🎚️  Fly Speed",
     Default = 20,
     Min = 16,
     Max = 40,
