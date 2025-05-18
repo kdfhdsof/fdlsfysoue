@@ -264,7 +264,6 @@ end)
 
 
 
-
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
@@ -285,9 +284,9 @@ local function updateMovement()
     local forward = camera.CFrame.LookVector
     local right = camera.CFrame.RightVector
     local up = Vector3.new(0, 1, 0)
-    
+
     moveDirection = Vector3.zero
-    
+
     if not isMobile then
         if userInputService:IsKeyDown(Enum.KeyCode.W) then
             moveDirection = moveDirection + forward
@@ -353,7 +352,6 @@ local Options = {
 }
 
 local Toggle = Tabs.Player:AddToggle("✈ Fly", {Title = "✈ Fly", Default = false})
-
 Toggle:OnChanged(function()
     if Toggle.Value then
         startFlying()
@@ -362,14 +360,26 @@ Toggle:OnChanged(function()
     end
 end)
 
+local Slider = Tabs.Player:AddSlider("FlyS", {
+    Title = "Fly Speed",
+    Default = 20,
+    Min = 16,
+    Max = 40,
+    Rounding = 0,
+    Callback = function(Value)
+        speed = Value
+    end
+})
+Slider:OnChanged(function(Value)
+    speed = Value
+end)
+Slider:SetValue(40)
+
 player.CharacterAdded:Connect(function(newCharacter)
     stopFlying()
     character = newCharacter
     humanoid = character:WaitForChild("Humanoid")
 end)
-
-
-
 
 
 Tabs.Player:AddButton({
@@ -1586,8 +1596,8 @@ Tabs.Teleport:AddButton({
     Callback = function()
         if savedName == "" then
             Fluent:Notify({
-                Title = "?",
-                Content = "",
+                Title = "Tp Error",
+                Content = "Write a player name.",
                 Duration = 5
             })
             return
@@ -1604,14 +1614,14 @@ Tabs.Teleport:AddButton({
         if #matchedPlayers == 0 then
             Fluent:Notify({
                 Title = "Tp Error",
-                Content = "Player not found.",
+                Content = "This player cant found on the server.",
                 Duration = 5
             })
             return
         elseif #matchedPlayers > 1 then
             Fluent:Notify({
                 Title = "Tp Error",
-                Content = "There is more than one player with the same name.",
+                Content = "There is multiple players with the same name.",
                 Duration = 5
             })
             return
@@ -1622,7 +1632,7 @@ Tabs.Teleport:AddButton({
         if not targetCharacter or not targetCharacter:FindFirstChild("Humanoid") or targetCharacter:FindFirstChild("Humanoid").Health <= 0 then
             Fluent:Notify({
                 Title = "Tp Error",
-                Content = "Player Dead",
+                Content = "This player is not alive.",
                 Duration = 5
             })
             return
@@ -1684,8 +1694,6 @@ Tabs.Teleport:AddButton({
 })
 
 
-
-
 local spawnPoint = nil
 local spawnSet = false
 
@@ -1708,8 +1716,8 @@ Tabs.Teleport:AddButton({
                             spawnPoint = humanoidRootPart.CFrame
                             spawnSet = true
                             game:GetService("StarterGui"):SetCore("SendNotification", {
-                                Title = "Spawn Point Saved",
-                                Text = "",
+                                Title = "Saved",
+                                Text = "Spawn Point",
                                 Duration = 3
                             })
                         end
@@ -1721,8 +1729,8 @@ Tabs.Teleport:AddButton({
                         spawnPoint = nil
                         spawnSet = false
                         game:GetService("StarterGui"):SetCore("SendNotification", {
-                            Title = "Spawn Point Removed",
-                            Text = "",
+                            Title = "Removed",
+                            Text = "Spawn Point",
                             Duration = 3
                         })
                     end
@@ -1738,7 +1746,7 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
         character:WaitForChild("HumanoidRootPart").CFrame = spawnPoint + Vector3.new(0, 3, 0)
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Teleported",
-            Text = "",
+            Text = "To Spawn Point",
             Duration = 3
         })
     end
@@ -1826,8 +1834,6 @@ FireToggle:OnChanged(function()
 end)
 
 
-
-
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
@@ -1903,12 +1909,8 @@ end)
 ToggleTitan:SetValue(false)
 
 
-local player = game.Players.LocalPlayer
 local replicatedStorage = game:GetService("ReplicatedStorage")
-local tweenService = game:GetService("TweenService")
 local remoteInterface = replicatedStorage:WaitForChild("remoteInterface")
-local workspace = game:GetService("Workspace")
-
 local chop = workspace.worldResources.choppable
 local mineable = workspace.worldResources.mineable
 local aiFolder = workspace:WaitForChild("AI_Server")
@@ -1918,71 +1920,6 @@ local stamina = nil
 local humanoid = nil
 local flying = false
 local isAutoChopEnabled, isAutoMineEnabled, isAutoAIEnabled = false, false, false
-
-local BreakerPart
-local BreakerUI
-local BreakerRef
-
-local function clean()
-    if not BreakerUI then return end
-    if BreakerPart then 
-        BreakerPart:Destroy() 
-    end
-    BreakerUI = nil
-    BreakerPart = nil
-    BreakerRef = nil
-end
-
-local function customHealthbar(block, health, maxHealth)
-    clean()
-    local percent = math.clamp(health / maxHealth, 0, 1)
-    local part = Instance.new('Part')
-    part.Size = Vector3.one
-    part.CFrame = block.PrimaryPart.CFrame
-    part.Transparency = 1
-    part.Anchored = true
-    part.CanCollide = false
-    part.Parent = workspace
-    BreakerPart = part
-
-    local billboard = Instance.new('BillboardGui')
-    billboard.Size = UDim2.fromOffset(249, 120)
-    billboard.StudsOffset = Vector3.new(0, 3, 0)
-    billboard.Adornee = part
-    billboard.MaxDistance = 100
-    billboard.AlwaysOnTop = true
-    billboard.Parent = part
-    BreakerUI = billboard
-
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.fromOffset(200, 20)
-    nameLabel.Position = UDim2.fromOffset(24, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.TextScaled = true
-    nameLabel.TextColor3 = Color3.new(1, 1, 1)
-    nameLabel.Font = Enum.Font.SourceSansBold
-    nameLabel.Text = block.Name
-    nameLabel.Parent = billboard
-
-    local holder = Instance.new('Frame')
-    holder.Size = UDim2.fromOffset(160, 50)
-    holder.Position = UDim2.fromOffset(44, 32)
-    holder.BackgroundColor3 = Color3.new()
-    holder.BackgroundTransparency = 0.5
-    holder.Parent = billboard
-
-    local barholder = Instance.new('Frame')
-    barholder.Size = UDim2.fromOffset(138, 4)
-    barholder.Position = UDim2.fromOffset(12, 32)
-    barholder.BackgroundColor3 = Color3.new(1, 0, 0)
-    barholder.Parent = holder
-
-    local healthbar = Instance.new('Frame')
-    healthbar.Size = UDim2.fromScale(percent, 1)
-    healthbar.BackgroundColor3 = Color3.new(0, 1, 0)
-    healthbar.Parent = barholder
-    BreakerRef = healthbar
-end
 
 local function chopObject(object)
     if object and object.PrimaryPart then
@@ -2013,14 +1950,7 @@ local function autoChop()
         end
     end
     if nearestObject then
-        local health = nearestObject:GetAttribute("health")
-        local maxHealth = nearestObject:GetAttribute("maxHealth")
-        if health and maxHealth then
-            customHealthbar(nearestObject, health, maxHealth)
-        end
         chopObject(nearestObject)
-    else
-        clean()
     end
 end
 
@@ -2053,14 +1983,7 @@ local function autoMine()
         end
     end
     if nearestObject then
-        local health = nearestObject:GetAttribute("health")
-        local maxHealth = nearestObject:GetAttribute("maxHealth")
-        if health and maxHealth then
-            customHealthbar(nearestObject, health, maxHealth)
-        end
         mineObject(nearestObject)
-    else
-        clean()
     end
 end
 
@@ -2170,7 +2093,6 @@ AutoMineToggle:OnChanged(function(value)
 end)
 
 updateCharacter()
-
 
 -- Esp Tab
 
