@@ -1,6 +1,8 @@
 if getgenv().ScriptAlreadyExecuted then return end
 getgenv().ScriptAlreadyExecuted = true
 
+
+
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
@@ -2541,6 +2543,68 @@ end
 Players.PlayerAdded:Connect(CreateTracer)
 
 
+local Toggle = Tabs.Esp:AddToggle("StudsESP", {Title = "📏  Studs Esp", Default = false})
+
+local distanceLabels = {}
+
+Toggle:OnChanged(function(Value)
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            local char = player.Character
+            if char and char:FindFirstChild("Head") then
+                if Value then
+                    if not distanceLabels[player] then
+                        local billboard = Instance.new("BillboardGui")
+                        billboard.Name = "StudsESP_Billboard"
+                        billboard.Adornee = char.Head
+                        billboard.Size = UDim2.new(0, 70, 0, 30)
+                        billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+                        billboard.AlwaysOnTop = true
+                        billboard.Parent = char.Head
+
+                        local label = Instance.new("TextLabel")
+                        label.Size = UDim2.new(1, 0, 1, 0)
+                        label.BackgroundTransparency = 1
+                        label.TextColor3 = Color3.new(255, 255, 255)
+                        label.TextStrokeTransparency = 0.5
+                        label.Font = Enum.Font.GothamBold
+                        label.TextScaled = true
+                        label.Parent = billboard
+
+                        distanceLabels[player] = {billboard = billboard, label = label}
+                    end
+                else
+                    if distanceLabels[player] then
+                        distanceLabels[player].billboard:Destroy()
+                        distanceLabels[player] = nil
+                    end
+                end
+            end
+        end
+    end
+
+    if Value then
+        if not Toggle._distanceConnection then
+            Toggle._distanceConnection = game:GetService("RunService").RenderStepped:Connect(function()
+                for _, player in ipairs(game.Players:GetPlayers()) do
+                    if player ~= game.Players.LocalPlayer and distanceLabels[player] and player.Character and player.Character:FindFirstChild("Head") then
+                        local myChar = game.Players.LocalPlayer.Character
+                        if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+                            local dist = (player.Character.Head.Position - myChar.HumanoidRootPart.Position).Magnitude
+                            distanceLabels[player].label.Text = string.format("%.1f studs", dist)
+                        end
+                    end
+                end
+            end)
+        end
+    else
+        if Toggle._distanceConnection then
+            Toggle._distanceConnection:Disconnect()
+            Toggle._distanceConnection = nil
+        end
+    end
+end)
+
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -2641,6 +2705,7 @@ end
 Toggle:OnChanged(function(value)
     toggleHealthBars(value)
 end)
+
 
 -- CR7 Tab
 
