@@ -1,6 +1,8 @@
 if getgenv().ScriptAlreadyExecuted then return end
 getgenv().ScriptAlreadyExecuted = true
 
+
+
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
@@ -569,8 +571,6 @@ end
 end)
 
 
-
-
 local Toggle = Tabs.Player:AddToggle("XRayToggle", {Title = "🔍  X-Ray", Default = false})
 
 local originalTransparency = {}
@@ -597,7 +597,7 @@ Toggle:OnChanged(function(value)
                     if originalTransparency[obj] == nil then
                         originalTransparency[obj] = obj.Transparency
                     end
-                    obj.Transparency = 0.7
+                    obj.Transparency = 0.66
                 else
                     if originalTransparency[obj] ~= nil then
                         obj.Transparency = originalTransparency[obj]
