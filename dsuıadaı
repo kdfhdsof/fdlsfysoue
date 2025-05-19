@@ -1220,14 +1220,6 @@ end
 
 end
 
-if not forge then
-
-warn("")
-
-return
-
-end
-
 local argsSword = {
 
 [1] = 267,
@@ -1390,15 +1382,6 @@ break
 end
 
 end
-
-if not furnace then
-
-warn("")
-
-return
-
-end
-
 
 local itemsToCraft = {
 
