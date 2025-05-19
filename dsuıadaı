@@ -1890,40 +1890,90 @@ FireToggle:OnChanged(function()
 end)
 
 
+local Toggle = Tabs.Aura:AddToggle("FreezeAI", {
+    Title = "🧊  Freeze AI",
+    Description = "  By ZekeNey",
+    Default = false
+})
+
+local aiStates = {}
+local runService = game:GetService("RunService")
+local players = game:GetService("Players")
+
+Toggle:OnChanged(function(val)
+    if val then
+        Toggle._conn = runService.RenderStepped:Connect(function()
+            local myChar = players.LocalPlayer.Character
+            if not myChar then return end
+            local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+            if not myHRP then return end
+
+            for _, ai in ipairs(workspace.AI_Server:GetChildren()) do
+                if ai:IsA("Model") and ai ~= myChar then
+                    local hrp = ai:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        local dist = (hrp.Position - myHRP.Position).Magnitude
+                        if dist <= 25 then
+                            if aiStates[ai] == nil then
+                                aiStates[ai] = hrp.Anchored
+                            end
+                            hrp.Anchored = true
+                        else
+                            if aiStates[ai] ~= nil then
+                                hrp.Anchored = aiStates[ai]
+                                aiStates[ai] = nil
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if Toggle._conn then Toggle._conn:Disconnect() Toggle._conn = nil end
+        for ai, wasAnchored in pairs(aiStates) do
+            if ai and ai:FindFirstChild("HumanoidRootPart") then
+                ai.HumanoidRootPart.Anchored = wasAnchored
+            end
+        end
+        aiStates = {}
+    end
+end)
+
+
 local player = game.Players.LocalPlayer
+local runService = game:GetService("RunService")
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
-local runService = game:GetService("RunService")
-local flying = false
-local bodyGyro, bodyVelocity, flyConnection
+local flying, bodyGyro, bodyVelocity, flyConnection = false
+
+local ToggleTitan = Tabs.Aura:AddToggle("TitanToggle", {Title = "👹  Titan Aura", Default = false})
+local ToggleAI = Tabs.Aura:AddToggle("AutoAIToggle", {Title = "🐎  AI Aura (Slot 1)", Default = false})
 
 local function startFlying()
     if flying then return end
     flying = true
     humanoid.PlatformStand = true
-    bodyGyro = Instance.new("BodyGyro")
-    bodyVelocity = Instance.new("BodyVelocity")
+    local hrp = character:WaitForChild("HumanoidRootPart")
+    bodyGyro = Instance.new("BodyGyro", hrp)
+    bodyVelocity = Instance.new("BodyVelocity", hrp)
     bodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
     bodyGyro.P = 5000
-    bodyGyro.CFrame = character.HumanoidRootPart.CFrame
-    bodyGyro.Parent = character.HumanoidRootPart
+    bodyGyro.CFrame = hrp.CFrame
     bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
     bodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
-    bodyVelocity.Parent = character.HumanoidRootPart
     flyConnection = runService.RenderStepped:Connect(function()
-        if flying and character and character:FindFirstChild("HumanoidRootPart") then
+        if flying and hrp then
             bodyVelocity.Velocity = Vector3.new(0, 0.1, 0)
-            bodyGyro.CFrame = character.HumanoidRootPart.CFrame
+            bodyGyro.CFrame = hrp.CFrame
         end
     end)
 end
 
 local function stopFlying()
-    if not flying then return end
     flying = false
     if flyConnection then flyConnection:Disconnect() flyConnection = nil end
-    if bodyGyro then bodyGyro:Destroy() end
-    if bodyVelocity then bodyVelocity:Destroy() end
+    if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
+    if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
     if humanoid then humanoid.PlatformStand = false end
 end
 
@@ -1931,29 +1981,16 @@ local function setupCharacter()
     character = player.Character or player.CharacterAdded:Wait()
     humanoid = character:WaitForChild("Humanoid")
     if ToggleTitan:GetValue() then
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(
-            character.HumanoidRootPart.Position.X,
-            character.HumanoidRootPart.Position.Y + 12,
-            character.HumanoidRootPart.Position.Z
-        )
+        local hrp = character:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = hrp.CFrame + Vector3.new(0, 12, 0)
         startFlying()
     end
 end
 
-player.CharacterAdded:Connect(function()
-    wait(1)
-    setupCharacter()
-end)
-
-local ToggleTitan = Tabs.Aura:AddToggle("TitanToggle", {Title = "👹  Titan Aura", Default = false})
-local ToggleAI = Tabs.Aura:AddToggle("AutoAIToggle", {Title = "🐎  AI Aura (Slot 1)", Default = false})
-
 ToggleTitan:OnChanged(function(value)
-    if value then
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            hrp.CFrame = CFrame.new(hrp.Position.X, hrp.Position.Y + 12, hrp.Position.Z)
-        end
+    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if value and hrp then
+        hrp.CFrame = hrp.CFrame + Vector3.new(0, 12, 0)
         startFlying()
         ToggleAI:SetValue(true)
     else
@@ -1962,7 +1999,13 @@ ToggleTitan:OnChanged(function(value)
     end
 end)
 
+player.CharacterAdded:Connect(function()
+    task.wait(1)
+    setupCharacter()
+end)
+
 ToggleTitan:SetValue(false)
+
 
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
@@ -2601,107 +2644,6 @@ Toggle:OnChanged(function(Value)
             Toggle._distanceConnection = nil
         end
     end
-end)
-
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local Toggle = Tabs.Esp:AddToggle("HealthBarToggle", {Title = "❤  Health Esp", Default = false })
-
-local function createHealthBar(player)
-    if player == LocalPlayer then return end
-
-    local function onCharacterAdded(character)
-        local head = character:FindFirstChild("Head")
-        if not head then return end
-
-        local billboard = Instance.new("BillboardGui")
-        billboard.Size = UDim2.new(2, 0, 4, 0)
-        billboard.StudsOffset = Vector3.new(2, 0, 0)
-        billboard.AlwaysOnTop = true
-        billboard.Adornee = head
-        billboard.Parent = head
-        billboard.LightInfluence = 0
-        billboard.MaxDistance = math.huge
-
-        local background = Instance.new("Frame")
-        background.Size = UDim2.new(0.2, 0, 1, 0)
-        background.Position = UDim2.new(0.4, 0, 0, 0)
-        background.BackgroundColor3 = Color3.new(0, 0, 0)
-        background.BorderSizePixel = 0
-        background.Parent = billboard
-
-        local healthBar = Instance.new("Frame")
-        healthBar.Size = UDim2.new(1, 0, 1, 0)
-        healthBar.Position = UDim2.new(0, 0, 0, 0)
-        healthBar.BorderSizePixel = 0
-        healthBar.Parent = background
-
-        local function updateHealth()
-            if not character then return end
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if not humanoid then return end
-
-            local healthPercent = humanoid.Health / humanoid.MaxHealth
-            healthBar.Size = UDim2.new(1, 0, healthPercent, 0)
-            healthBar.Position = UDim2.new(0, 0, 1 - healthPercent, 0)
-
-            if healthPercent <= 0.25 then
-                healthBar.BackgroundColor3 = Color3.new(1, 0, 0)
-            else
-                healthBar.BackgroundColor3 = Color3.fromHSV(healthPercent * 0.3, 1, 1)
-            end
-        end
-
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:GetPropertyChangedSignal("Health"):Connect(updateHealth)
-            updateHealth()
-        end
-
-        player.CharacterRemoving:Connect(function()
-            billboard:Destroy()
-        end)
-    end
-
-    if player.Character then
-        onCharacterAdded(player.Character)
-    end
-
-    player.CharacterAdded:Connect(onCharacterAdded)
-end
-
-local function toggleHealthBars(enabled)
-    if enabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then
-                createHealthBar(player)
-            end
-        end
-
-        Players.PlayerAdded:Connect(function(player)
-            createHealthBar(player)
-        end)
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                local head = player.Character:FindFirstChild("Head")
-                if head then
-                    for _, gui in pairs(head:GetChildren()) do
-                        if gui:IsA("BillboardGui") then
-                            gui:Destroy()
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-
-Toggle:OnChanged(function(value)
-    toggleHealthBars(value)
 end)
 
 
