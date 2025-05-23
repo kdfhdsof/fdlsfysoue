@@ -1805,7 +1805,7 @@ local foodIds = {
     ["🍌  Banana"] = 367,
     ["🥕  Carrot"] = 95,
     ["🍇  Berry"] = 113,
-    ["🥚  Egg"] = 272,
+    ["🥚  Egg"] = 272
 }
 
 local eating = false
