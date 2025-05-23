@@ -1801,11 +1801,11 @@ local replicatedStorage = game:GetService("ReplicatedStorage")
 local eatRemote = replicatedStorage:WaitForChild("remoteInterface"):WaitForChild("interactions"):WaitForChild("eat")
 
 local foodIds = {
-    ["🥬     Cabbage"] = 210,
-    ["🍌     Banana"] = 367,
-    ["🥕     Carrot"] = 95,
-    ["🍇     Berry"] = 113,
-    ["🥚     Egg"] = 272,
+    ["🥬  Cabbage"] = 210,
+    ["🍌  Banana"] = 367,
+    ["🥕  Carrot"] = 95,
+    ["🍇  Berry"] = 113,
+    ["🥚  Egg"] = 272,
 }
 
 local eating = false
