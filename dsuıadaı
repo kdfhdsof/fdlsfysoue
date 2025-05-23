@@ -17,7 +17,7 @@ SubTitle = "By / Cr7_Arda",
 
 TabWidth = 160,
 
-Size = UDim2.fromOffset(380, 230),
+Size = UDim2.fromOffset(430, 260),
 
 Acrylic = true,
 
