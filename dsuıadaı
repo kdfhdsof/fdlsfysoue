@@ -1701,7 +1701,7 @@ local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
     Title = "🌍  Land Name",
     Values = { "       🏞  Mainland", "       🏜  Desert", "       🌋  Volcano", "       🌲  Forest", "       ❄  Artic", "       🏮  Asia" },
     Multi = false,
-    Default = "🏞  Mainland",
+    Default = "       🏞  Mainland",
 })
 
 Dropdown:OnChanged(function(Value)
