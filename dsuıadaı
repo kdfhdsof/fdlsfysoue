@@ -200,7 +200,7 @@ ToggleSpeed:OnChanged(function()
 end)
 
 local SpeedInput = Tabs.Player:AddInput("SpeedInput", {
-    Title = "🔢  Set Speed",
+    Title = "🔢  Set",
     Default = "16",
     Placeholder = "Enter speed",
     Numeric = true,
@@ -226,9 +226,9 @@ end)
 
 local Dropdown = Tabs.Player:AddDropdown("Dropdown", {
 
-Title = "🦘  Jump Power",
+Title = "🦘  Jump",
 
-Values = { "😐  Normal Jump", "☀️  Sky Jump", "💫  Space Jump" },
+Values = { "😐  Normal", "☀️  Sky", "💫  Space" },
 
 Multi = false,
 
@@ -236,7 +236,7 @@ Default = 1,
 
 })
 
-Dropdown:SetValue("😐  Normal Jump")
+Dropdown:SetValue("😐  Normal")
 
 Dropdown:OnChanged(function(Value)
 
@@ -246,15 +246,15 @@ local character = player.Character or player.CharacterAdded:Wait()
 
 local humanoid = character:WaitForChild("Humanoid")
 
-if Value == "😐  Normal Jump" then
+if Value == "😐  Normal" then
 
 humanoid.JumpPower = 50
 
-elseif Value == "☀️  Sky Jump" then
+elseif Value == "☀️  Sky" then
 
 humanoid.JumpPower = 200
 
-elseif Value == "💫  Space Jump" then
+elseif Value == "💫  Space" then
 
 humanoid.JumpPower = 400
 
