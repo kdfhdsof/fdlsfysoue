@@ -1687,21 +1687,21 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
 local teleportPositions = {
-    ["🏞     Mainland"] = Vector3.new(-305, 25, 405),
-    ["🏜     Desert"] = Vector3.new(1265, 25, -209),
-    ["🌋     Volcano"] = Vector3.new(1734, 25, 2013),
-    ["🌲     Forest"] = Vector3.new(-2074, 25, 420),
-    ["❄     Artic"] = Vector3.new(-1190, 25, -1718),
-    ["🏮     Asia"] = Vector3.new(-1055.904, 30.579, 5759.370)
+    ["🏞  Mainland"] = Vector3.new(-305, 25, 405),
+    ["🏜  Desert"] = Vector3.new(1265, 25, -209),
+    ["🌋  Volcano"] = Vector3.new(1734, 25, 2013),
+    ["🌲  Forest"] = Vector3.new(-2074, 25, 420),
+    ["❄  Artic"] = Vector3.new(-1190, 25, -1718),
+    ["🏮  Asia"] = Vector3.new(-1055.904, 30.579, 5759.370)
 }
 
 local selectedPosition = teleportPositions["🏞  Mainland"]
 
 local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
     Title = "🌍  Land Name",
-    Values = { "🏞     Mainland", "🏜     Desert", "🌋     Volcano", "🌲     Forest", "❄     Artic", "🏮     Asia" },
+    Values = { "       🏞  Mainland", "       🏜  Desert", "       🌋  Volcano", "       🌲  Forest", "       ❄  Artic", "       🏮  Asia" },
     Multi = false,
-    Default = "🏞     Mainland",
+    Default = "🏞  Mainland",
 })
 
 Dropdown:OnChanged(function(Value)
