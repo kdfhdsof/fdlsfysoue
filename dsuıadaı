@@ -15,7 +15,7 @@ SubTitle = "By / Cr7_Arda",
 
 TabWidth = 160,
 
-Size = UDim2.fromOffset(470, 270),
+Size = UDim2.fromOffset(480, 250),
 
 Acrylic = true,
 
@@ -234,7 +234,7 @@ Default = 1,
 
 })
 
-Dropdown:SetValue("😐  Normal")
+Dropdown:SetValue("           😐  Normal")
 
 Dropdown:OnChanged(function(Value)
 
@@ -244,15 +244,15 @@ local character = player.Character or player.CharacterAdded:Wait()
 
 local humanoid = character:WaitForChild("Humanoid")
 
-if Value == "😐  Normal" then
+if Value == "           😐  Normal" then
 
 humanoid.JumpPower = 50
 
-elseif Value == "☀️  Sky" then
+elseif Value == "           ☀️  Sky" then
 
 humanoid.JumpPower = 200
 
-elseif Value == "💫  Space" then
+elseif Value == "           💫  Space" then
 
 humanoid.JumpPower = 400
 
