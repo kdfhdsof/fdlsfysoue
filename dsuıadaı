@@ -226,7 +226,7 @@ local Dropdown = Tabs.Player:AddDropdown("Dropdown", {
 
 Title = "🦘  Jump Size",
 
-Values = { "           😐  Normal", "           ☀️  Sky", "           💫  Space" },
+Values = { "😐  Normal", "☀️  Sky", "💫  Space" },
 
 Multi = false,
 
@@ -234,7 +234,7 @@ Default = 1,
 
 })
 
-Dropdown:SetValue("           😐  Normal")
+Dropdown:SetValue("😐  Normal")
 
 Dropdown:OnChanged(function(Value)
 
@@ -244,15 +244,15 @@ local character = player.Character or player.CharacterAdded:Wait()
 
 local humanoid = character:WaitForChild("Humanoid")
 
-if Value == "           😐  Normal" then
+if Value == "😐  Normal" then
 
 humanoid.JumpPower = 50
 
-elseif Value == "           ☀️  Sky" then
+elseif Value == "☀️  Sky" then
 
 humanoid.JumpPower = 200
 
-elseif Value == "           💫  Space" then
+elseif Value == "💫  Space" then
 
 humanoid.JumpPower = 400
 
@@ -1687,21 +1687,21 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
 local teleportPositions = {
-    ["        🏞  Mainland"] = Vector3.new(-305, 25, 405),
-    ["        🏜  Desert"] = Vector3.new(1265, 25, -209),
-    ["        🌋  Volcano"] = Vector3.new(1734, 25, 2013),
-    ["        🌲  Forest"] = Vector3.new(-2074, 25, 420),
-    ["        ❄  Artic"] = Vector3.new(-1190, 25, -1718),
-    ["        🏮  Asia"] = Vector3.new(-1055.904, 30.579, 5759.370)
+    ["🏞  Mainland"] = Vector3.new(-305, 25, 405),
+    ["🏜  Desert"] = Vector3.new(1265, 25, -209),
+    ["🌋  Volcano"] = Vector3.new(1734, 25, 2013),
+    ["🌲  Forest"] = Vector3.new(-2074, 25, 420),
+    ["❄  Artic"] = Vector3.new(-1190, 25, -1718),
+    ["🏮  Asia"] = Vector3.new(-1055.904, 30.579, 5759.370)
 }
 
 local selectedPosition = teleportPositions["🏞  Mainland"]
 
 local Dropdown = Tabs.Teleport:AddDropdown("Dropdown", {
     Title = "🌍  Land Name",
-    Values = { "        🏞  Mainland", "        🏜  Desert", "        🌋  Volcano", "        🌲  Forest", "        ❄  Artic", "        🏮  Asia" },
+    Values = { "🏞  Mainland", "🏜  Desert", "🌋  Volcano", "🌲  Forest", "❄  Artic", "🏮  Asia" },
     Multi = false,
-    Default = "        🏞  Mainland",
+    Default = "🏞  Mainland",
 })
 
 Dropdown:OnChanged(function(Value)
@@ -1810,12 +1810,12 @@ local eating = false
 
 local Dropdown = Tabs.Aura:AddDropdown("Dropdown", {
     Title = "😋  Pick Food",
-    Values = {"🥬     Cabbage", "🍌     Banana", "🥕     Carrot", "🍇     Berry", "🥚     Egg"},
+    Values = {"🥬  Cabbage", "🍌  Banana", "🥕  Carrot", "🍇  Berry", "🥚  Egg"},
     Multi = false,
-    Default = "🥬     Cabbage",
+    Default = "🥬  Cabbage",
 })
 
-Dropdown:SetValue("🥬     Cabbage")
+Dropdown:SetValue("🥬  Cabbage")
 
 local HealToggle = Tabs.Aura:AddToggle("HealToggle", { Title = "💚  Heal Aura", Default = false })
 
@@ -1873,7 +1873,6 @@ end)
 
 local Toggle = Tabs.Aura:AddToggle("FreezeAI", {
     Title = "🧊  Freeze AI",
-    Description = "",
     Default = false
 })
 
