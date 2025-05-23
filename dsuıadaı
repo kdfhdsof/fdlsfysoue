@@ -1873,7 +1873,7 @@ end)
 
 local Toggle = Tabs.Aura:AddToggle("FreezeAI", {
     Title = "🧊  Freeze AI",
-    Description = "  By ZekeNey",
+    Description = "",
     Default = false
 })
 
